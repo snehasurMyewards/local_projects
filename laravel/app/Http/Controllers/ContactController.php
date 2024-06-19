@@ -14,7 +14,7 @@ class ContactController extends Controller
         $chunkIndex = 1;
         $folderName = 'exports/contacts/' . now()->format('YmdHis');
 
-        // Retrieve only the first 100 records
+        // Retrieve only the first 100 records  
         $contacts = DB::table('users')
             ->select('id', 'name')
             ->orderBy('id')
