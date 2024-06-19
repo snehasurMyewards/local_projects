@@ -1,0 +1,14 @@
+{
+    "name": "bidis/hello-world",
+    "autoload": {
+        "psr-4": {
+            "HelloWorld\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Sneha Sur"
+        }
+    ],
+    "require": {}
+}
