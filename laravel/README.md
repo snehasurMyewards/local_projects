@@ -4,7 +4,7 @@ local-D:\Newproject_laravel10\demo\LaravelPackage
 codecaptain/laravelcontactpackage from https://packagist.org/
 https://github.com/snehasurMyewards/laravel-contact-package
 2.trait 
-3.laravel chunk,xls file create,uplode on aws s3 bucket,job quaue
+3.laravel chunk,xls file create on,uplode on aws s3 bucket return link,job quaue,delete local
 //local
 <!-- ->run -->
 ->composer require maatwebsite/excel --igre-platfonorm-req=ext-gd
@@ -270,4 +270,78 @@ composer clear-cache
 composer install
 composer dump-autoload
 php artisan queue:work sqs
+4.ai prediction with laravel 
+php artisan make:controller PredictController
+<!-- in controler -->
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Phpml\Dataset\ArrayDataset;
+use Phpml\Regression\LeastSquares;
+
+class PredictController extends Controller
+{
+    public function predict(Request $request)
+    {
+        // Sample training data: [bedrooms, bathrooms, square footage]
+        $samples = [
+            [2, 1, 1500],
+            [3, 2, 2000],
+            [4, 3, 2500],
+            [5, 2, 3000],
+            [3, 1, 1800]
+        ];
+        $targets = [300000, 400000, 500000, 600000, 350000];
+
+        // Create dataset
+        $dataset = new ArrayDataset($samples, $targets);
+
+        // Train the model
+        $regression = new LeastSquares();
+        $regression->train($dataset->getSamples(), $dataset->getTargets());
+
+        // Get input data from request
+        $bedrooms = $request->input('bedrooms');
+        $bathrooms = $request->input('bathrooms');
+        $sqft = $request->input('sqft');
+
+        // Make a prediction
+        $predictedPrice = $regression->predict([$bedrooms, $bathrooms, $sqft]);
+
+        return response()->json(['price' => $predictedPrice]);
+    }
+}
+
+composer require php-ai/php-ml
+<!-- in route -->
+
+use App\Http\Controllers\PredictController;
+
+Route::get('/predict-form', function () {
+    return view('predict');
+});
+
+Route::post('/predict', [PredictController::class, 'predict']);
+<!-- predict blade -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Predictor</title>
+</head>
+<body>
+    <form action="/predict" method="POST">
+        @csrf
+        <label for="bedrooms">Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" required><br><br>
+        <label for="bathrooms">Bathrooms:</label>
+        <input type="number" id="bathrooms" name="bathrooms" required><br><br>
+        <label for="sqft">Square Feet:</label>
+        <input type="number" id="sqft" name="sqft" required><br><br>
+        <button type="submit">Predict Price</button>
+    </form>
+</body>
+</html>
+
+php artisan serve
 

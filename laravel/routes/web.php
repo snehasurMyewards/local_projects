@@ -21,3 +21,12 @@ Route::get('/', function () {
 use App\Http\Controllers\TraitsTestController;
 
 Route::get('/traitstest', [TraitsTestController::class, 'showStudents']);
+
+use App\Http\Controllers\PredictController;
+
+// Route::get('/predict-form', function () {
+//     return view('predict');
+// });
+
+Route::get('/predict', [PredictController::class, 'predict']);
+
